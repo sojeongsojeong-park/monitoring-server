@@ -1,4 +1,15 @@
 export interface Data {
+	status: Status.ok;
+	server_issue: string[] | null;
+	data: (ServerData | FetchingError)[];
+}
+
+export interface FetchingError {
+	status: Status.error;
+	error: string;
+}
+
+export interface ServerData {
 	status: Status;
 	region: Region;
 	roles: string[];
@@ -26,7 +37,10 @@ export interface Data {
 	version: string;
 }
 
-export type Status = 'ok' | 'error';
+export enum Status {
+	ok = 'ok',
+	error = 'error',
+}
 type Region =
 	| 'us-east'
 	| 'eu-west'
