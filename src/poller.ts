@@ -1,6 +1,8 @@
 import axios from 'axios';
 import { Data, FetchingError, ServerData, Status } from './types';
 
+const TIMEOUT = 3000;
+
 const usEastEndpoint = process.env.US_EAST_ENDPOINT || '';
 const usWestEndpoint = process.env.US_WEST_ENDPOINT || '';
 const euWestEndpoint = process.env.EU_WEST_ENDPOINT || '';
@@ -23,7 +25,7 @@ const fetchingDatas = async (
 	endpoint: string
 ): Promise<ServerData | FetchingError> => {
 	try {
-		const res = await axios.get(endpoint, { timeout: 3000 });
+		const res = await axios.get(endpoint, { timeout: TIMEOUT });
 		return res.data;
 	} catch (err: any) {
 		return { status: Status.error, error: err.message };
@@ -37,7 +39,9 @@ const isServerData = (res: ServerData | FetchingError): res is ServerData => {
 export function startPolling(callback: (data: Data | FetchingError) => void) {
 	setInterval(async () => {
 		try {
-			const promises = endpoints.map((endpoint) => fetchingDatas(endpoint));
+			const promises = endpoints
+				.filter((endpoint) => endpoint !== '')
+				.map((endpoint) => fetchingDatas(endpoint));
 			const results = await Promise.all(promises);
 
 			const serverIssues = results

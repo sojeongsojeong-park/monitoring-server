@@ -41,6 +41,7 @@ export enum Status {
 	ok = 'ok',
 	error = 'error',
 }
+
 type Region =
 	| 'us-east'
 	| 'eu-west'
