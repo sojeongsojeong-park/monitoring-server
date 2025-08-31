@@ -50,7 +50,7 @@ startPolling((data) => {
 	if (isDataChanged(prevData, data)) {
 		wss.clients.forEach((client) => {
 			if (client.readyState === WebSocket.OPEN) {
-				broadcast(data);
+				broadcast({ ...data, update_at: new Date().toISOString() });
 			}
 		});
 	}

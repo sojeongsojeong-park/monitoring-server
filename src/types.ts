@@ -2,6 +2,7 @@ export interface Data {
 	status: Status.ok;
 	server_issue: string[] | null;
 	data: (ServerData | FetchingError)[];
+	update_at?: string;
 }
 
 export interface FetchingError {
