@@ -28,7 +28,7 @@ const fetchingDatas = async (
 		const res = await axios.get(endpoint, { timeout: TIMEOUT });
 		return res.data;
 	} catch (err: any) {
-		return { status: Status.error, error: err.message };
+		return { status: Status.error, data: err.message };
 	}
 };
 
@@ -38,26 +38,28 @@ const isServerData = (res: ServerData | FetchingError): res is ServerData => {
 
 export function startPolling(callback: (data: Data | FetchingError) => void) {
 	setInterval(async () => {
-		try {
-			const promises = endpoints
-				.filter((endpoint) => endpoint !== '')
-				.map((endpoint) => fetchingDatas(endpoint));
-			const results = await Promise.all(promises);
+		const promises = endpoints
+			.filter((endpoint) => endpoint !== '')
+			.map((endpoint) => fetchingDatas(endpoint));
+		const results = await Promise.all(promises);
 
-			const serverIssues = results
-				.filter(isServerData)
-				.flatMap((res) => res.server_issue ?? []);
-
-			const serverIssue: string[] | null =
-				serverIssues.length > 0 ? serverIssues : null;
-
-			callback({
-				status: Status.ok,
-				server_issue: serverIssue,
-				data: results,
-			});
-		} catch (err: any) {
-			callback({ status: Status.error, error: err.message });
+		const someFailed = results.some((res) => res.status === Status.error);
+		if (someFailed) {
+			callback({ status: Status.error, data: results });
+			return;
 		}
+
+		const serverIssues = results
+			.filter(isServerData)
+			.flatMap((res) => res.server_issue ?? []);
+
+		const serverIssue: string[] | null =
+			serverIssues.length > 0 ? serverIssues : null;
+
+		callback({
+			status: Status.ok,
+			server_issue: serverIssue,
+			data: results,
+		});
 	}, interval);
 }

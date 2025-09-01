@@ -38,7 +38,7 @@ startPolling((data) => {
 			if (client.readyState === WebSocket.OPEN) {
 				broadcast({
 					status: Status.error,
-					error: data?.error || 'Unknown error',
+					data: data?.data || 'Unknown error',
 				});
 			}
 		});
