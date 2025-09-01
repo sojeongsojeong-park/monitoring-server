@@ -30,8 +30,6 @@ const broadcast = (payload: Data | FetchingError) => {
 
 wss.on('connection', (ws) => {
 	console.log('Client connected ✅');
-
-	ws.send(JSON.stringify({ message: 'Connected to server' }));
 });
 
 startPolling((data) => {

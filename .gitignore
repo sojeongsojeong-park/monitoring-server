@@ -17,3 +17,5 @@ node_modules
 .yarn
 .env
 .tool-versions
+dist
+.github
