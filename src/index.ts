@@ -34,23 +34,15 @@ wss.on('connection', (ws) => {
 
 startPolling((data) => {
 	if (!data || data.status === Status.error) {
-		wss.clients.forEach((client) => {
-			if (client.readyState === WebSocket.OPEN) {
-				broadcast({
-					status: Status.error,
-					data: data?.data || 'Unknown error',
-				});
-			}
+		broadcast({
+			status: Status.error,
+			data: data?.data || 'Unknown error',
 		});
 		return;
 	}
 
 	if (isDataChanged(prevData, data)) {
-		wss.clients.forEach((client) => {
-			if (client.readyState === WebSocket.OPEN) {
-				broadcast({ ...data, update_at: new Date().toISOString() });
-			}
-		});
+		broadcast({ ...data, update_at: new Date().toISOString() });
 	}
 });
 
